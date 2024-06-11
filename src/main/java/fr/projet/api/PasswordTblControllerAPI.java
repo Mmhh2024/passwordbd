@@ -31,7 +31,7 @@ public class PasswordTblControllerAPI {
         DriverManager.getConnection("jdbc:clickhouse://127.0.0.1:8123/passworddb", "default", "")) {
      
 
-            String sql = "select uniq ( id ) from passwordtbl where id= (?)";
+            String sql = "select  id  from passwordtbl where id= (?)";
             PreparedStatement statement = connection.prepareStatement(sql);
         
             statement.setString(1, password);
@@ -39,24 +39,25 @@ public class PasswordTblControllerAPI {
             //statement.executeBatch(); 
             statement.executeQuery();
             ResultSet rs = statement.getResultSet();
-
-
-            if(rs.next()) {
-                // receive totals values
-                return true;   
-              }
-            return false ; 
-        }
+            boolean bool = false ;
+            
+            while(rs.next()) {
+                String id = rs.getString("id");
+                System.out.println(id );
+                System.out.println(password );
+                if (id == password){bool =  true; } 
+                else {bool =  false;}
+                return true;
+            }
+            
+            if (bool){return true; } else {return false;}
+         
+        } 
         catch (Exception ex) {
             ex.printStackTrace();
             log.error("Impossible de se connecter ...");
             return false;
         }
-      
-      /*   if ( this.repo.existsById(password)){
-            return true;
-        }
-       return false;*/
         
     }
 
