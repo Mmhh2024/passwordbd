@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/password")
+@CrossOrigin("*")
 public class PasswordTblControllerAPI {
 
     private static final Logger log = LoggerFactory.getLogger(PasswordTblControllerAPI.class);
@@ -35,19 +37,16 @@ public class PasswordTblControllerAPI {
             PreparedStatement statement = connection.prepareStatement(sql);
         
             statement.setString(1, password);
-            //statement.addBatch();
-            //statement.executeBatch(); 
+           
             statement.executeQuery();
             ResultSet rs = statement.getResultSet();
             boolean bool = false ;
             
             while(rs.next()) {
                 String id = rs.getString("id");
-                System.out.println(id );
-                System.out.println(password );
-                if (id == password){bool =  true; } 
+                if (id == password){ bool = true; } 
                 else {bool =  false;}
-                return true;
+
             }
             
             if (bool){return true; } else {return false;}
@@ -61,12 +60,9 @@ public class PasswordTblControllerAPI {
         
     }
 
-     @PostMapping("/{password}")
+      @PostMapping("/{password}")
     public void create( @PathVariable("password") String password) {
      
-      /*PasswordTbl pwd = new PasswordTbl();
-      pwd.setId(password);
-      this.repo.save(pwd);*/
       try (Connection connection = 
       DriverManager.getConnection("jdbc:clickhouse://127.0.0.1:8123/passworddb", "default", "")) {
       connection.setAutoCommit(true);
