@@ -27,35 +27,42 @@ public class PasswordTblControllerAPI {
     //private PasswordTblRepository repo  ;
 
     @GetMapping("/{password}")
-    public boolean getPasswordById(@PathVariable String  password ) {
-
+    public Boolean getPasswordById(@PathVariable String  password ) {
+        boolean bool = Boolean.FALSE ;
+        String id ="";
+        System.out.println(password);
         try (Connection connection = 
         DriverManager.getConnection("jdbc:clickhouse://127.0.0.1:8123/passworddb", "default", "")) {
      
 
-            String sql = "select  id  from passwordtbl where id= (?)";
+            String sql = "select  id  from passwordtbl where id= (?) LIMIT 2";
             PreparedStatement statement = connection.prepareStatement(sql);
         
             statement.setString(1, password);
            
             statement.executeQuery();
             ResultSet rs = statement.getResultSet();
-            boolean bool = false ;
+            
+            System.out.println("detail");
+            //System.out.println(rs.first());
             
             while(rs.next()) {
-                String id = rs.getString("id");
-                if (id == password){ bool = true; } 
-                else {bool =  false;}
+                id = rs.getString("id");
+                System.out.println(id);
+                System.out.println(password);
+                if (id.equals(password) ){  return Boolean.TRUE; } 
+               
 
             }
             
-            if (bool){return true; } else {return false;}
+            return Boolean.FALSE; 
          
         } 
         catch (Exception ex) {
             ex.printStackTrace();
             log.error("Impossible de se connecter ...");
-            return false;
+            System.out.println("exception");
+            return bool;
         }
         
     }
